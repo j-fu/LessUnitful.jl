@@ -82,9 +82,9 @@ end
 """
     (unit)(x::Real)
 
-Make number unitful. Assume this number represents the unit factor
-expressed in a unitful preferred unit. Create a unitful quantity in that unit
-unit and convert it to `unit`.
+Make number "unitful". Assume this number represents the unit factor
+with respect to a unitful preferred unit. Create a unitful quantity in that unit
+and convert it to `unit`.
 
 ### Example
 
