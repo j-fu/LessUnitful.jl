@@ -1,29 +1,46 @@
 module LessUnitful
 import Unitful
+import Unitful: @u_str
 import PhysicalConstants
 
 
 """
-    @si_str
+    unitfactor(quantity)
 
-Return the numerical value of physical unit measured in SI basis units.
+Calculate the unit factor, from a given quantity.
+This is the numerical value of the quantity in unitful preferred units,
+see [Notations](@ref).
 
 ### Example:
 ```jldoctest
-si"1mV"
-# output
-
+julia> unitfactor(u"1mV")
+0.001
+julia> u"1mV"|> unitfactor
 0.001
 ```
 """
-macro  si_str(x)
+unitfactor(quantity) = Unitful.ustrip(Unitful.upreferred(1.0*quantity))
+
+
+"""
+    @ufac_str
+
+Obtain the unit factor of a quantity  -- its numerical value when converted to unitful preferred units.
+
+### Example:
+```jldoctest
+julia> ufac"1mV"
+0.001
+```
+"""
+macro  ufac_str(x)
     Unitful=getproperty(@__MODULE__,:Unitful)
     quote
         $(Unitful).ustrip($(Unitful).upreferred(1.0*$(Unitful).@u_str($(x))))
     end
 end
 
-function _siunits(xs...)
+function _unitfactors(xs...)
     Unitful=getproperty(@__MODULE__,:Unitful)
     code = Expr(:block)
     for x in xs
@@ -33,23 +50,78 @@ function _siunits(xs...)
 end
 
 """
-    @siunits
+    @unitfactors
 
-Declare multiplicators for SI base units as global constants
+Declare unit factors as global constants.
 
+### Example
 
-### Example:
 ```jldoctest
-@siunits mm cm km
-3cm
-# output
-
+julia> @unitfactors cm
+0.01
+julia> 3cm
 0.03
 ```
+
+`@unitfactors cm` is equivalent to
+```
+const cm = ustrip(upreferred(u"1.0cm"))
+```
+
+and we can declare multiple unit factors at once:
+```
+@unitfactors mm cm km A V
+```
 """
-macro siunits(xs...)
-    esc(_siunits(xs...))
+macro unitfactors(xs...)
+    esc(_unitfactors(xs...))
 end
+
+
+
+"""
+    (unit)(x::Real)
+
+Make number unitful. Assume this number represents the unit factor
+expressed in a unitful preferred unit. Create a unitful quantity in that unit
+unit and convert it to `unit`.
+
+### Example
+
+```jldoctest
+julia> u"kPa"(200)
+0.2 kPa
+```
+
+
+```jldoctest
+julia> 200 |> u"kPa"
+0.2 kPa
+```
+
+
+This may be convenient when printing with units:
+Instead of 
+```jldoctest
+@unitfactors μA  mA
+x = 15mA
+println(x/μA," μA")
+# output
+15000.0 μA
+```
+one can use 
+```jldoctest
+@unitfactors μA  mA
+x = 15mA
+println(x|>u"μA")  
+# output
+15000.0 μA
+```
+"""
+(unit::Unitful.FreeUnits)(x::Real) = unit((Float64(x)*Unitful.upreferred(unit)))
+
+
+
 
 
 function _phconstants(xs...)
@@ -65,21 +137,39 @@ end
 """
     @phconstants
 
-Declare numerical values of physical constants in SI base units as global constant
+Declare numerical values of physical constants as unit factors with respect to unitful preferred units
+as constants.  The information is obtained from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
 
 ### Example:
 ```jldoctest
-@phconstants AvogadroConstant
-AvogadroConstant
+@phconstants N_A
 # output
-
 6.02214076e23
 ```
+
+This is equivalent to
+```
+const N_A = ustrip(upreferred(PhysicalConstants.CODATA2018.N_A))
+```
+
+and we can "declare" multiple constants
+```
+@phconstants AvogadroConstant c_0
+```
+
+
 """
 macro phconstants(xs...)
     esc(_phconstants(xs...))
 end
 
-export @siunits,@phconstants,@si_str
+
+
+export unitfactor,@ufac_str, @unitfactors
+
+
+export @phconstants
+export @u_str
 
 end # module LessUnitful
+
