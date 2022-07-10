@@ -17,6 +17,7 @@ The package accesses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) t
 unitfactor
 @ufac_str
 @unitfactors
+unitful
 Unitful.FreeUnits
 @phconstants
 ``` 

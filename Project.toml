@@ -1,7 +1,7 @@
 name = "LessUnitful"
 uuid = "f29f6376-6e90-4d80-80c9-fb8ec61203d5"
 authors = ["Jürgen Fuhrmann <juergen-fuhrmann@web.de>"]
-version = "0.0.2"
+version = "0.0.3"
 
 [deps]
 PhysicalConstants = "5ad8b20f-a522-5ce9-bfc9-ddf1d5bda6ab"

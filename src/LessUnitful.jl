@@ -9,7 +9,7 @@ import PhysicalConstants
 
 Calculate the unit factor, from a given quantity.
 This is the numerical value of the quantity in unitful preferred units,
-see [Notations](@ref).
+see [Notations](@ref). See [`unitful`](@ref) for the reciprocal operation.
 
 ### Example:
 ```jldoctest
@@ -77,14 +77,32 @@ macro unitfactors(xs...)
     esc(_unitfactors(xs...))
 end
 
+"""
+    unitful(x,unit)
+
+Make number `x` "unitful". Assume `x` represents an unit factor
+with respect to a unitful preferred unit. Create a unitful quantity in that unit
+and convert it to `unit`.  See [`unitfactor`](@ref) for the reciprocal operation.
+
+### Example
+
+```jldoctest
+julia> unitful(200,u"kPa")
+0.2 kPa
+```
+
+Equivalent to 
+```
+unit((Float64(x)*Unitful.upreferred(unit)))
+```
+"""
+unitful(x,unit)=unit((Float64(x)*Unitful.upreferred(unit)))
 
 
 """
     (unit)(x::Real)
 
-Make number "unitful". Assume this number represents the unit factor
-with respect to a unitful preferred unit. Create a unitful quantity in that unit
-and convert it to `unit`.
+Make number `x` "unitful" by calling [`unitful`](@ref).
 
 ### Example
 
@@ -118,7 +136,7 @@ println(x|>u"μA")
 15000.0 μA
 ```
 """
-(unit::Unitful.FreeUnits)(x::Real) = unit((Float64(x)*Unitful.upreferred(unit)))
+(unit::Unitful.FreeUnits)(x::Real) = unitful(x,unit)
 
 
 
@@ -165,7 +183,7 @@ end
 
 
 
-export unitfactor,@ufac_str, @unitfactors
+export unitfactor,@ufac_str, @unitfactors, unitful
 
 
 export @phconstants
