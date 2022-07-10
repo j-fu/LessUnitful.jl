@@ -5,7 +5,7 @@
 LessUnitful
 ===========
 
-Small package which provides convenience tools to access data from [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) and [PhysicalConstants.jl](https://github.com/JuliaPhysics/PhysicalConstants.jl) in an "unitless" way. This appears to be useful in projects using code which cannot easily made unit-aware, e.g. due to the use of sparse linear algebra.
+Small package which provides convenience tools to access quantities based on [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) and [PhysicalConstants.jl](https://github.com/JuliaPhysics/PhysicalConstants.jl) in an "unitless" way -- as floating point numbers representing the numerical value of the quantitity expressed in preferred units (SI base units by default). This appears to be useful in projects using code which cannot easily made unit-aware, e.g. due to the use of sparse linear algebra. 
 
 ## Installation
 
