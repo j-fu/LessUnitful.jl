@@ -1,14 +1,14 @@
 module LessUnitful
 import Unitful
-import Unitful: @u_str
+import Unitful: @u_str, FreeUnits
 import PhysicalConstants
 
 
 """
     unitfactor(quantity)
 
-Calculate the unit factor, from a given quantity.
-This is the numerical value of the quantity in unitful preferred units,
+Calculate the unit factor from a given quantity.
+This is the numerical value of the quantity after converting it to unitful preferred units,
 see [Notations](@ref). See [`unitful`](@ref) for the reciprocal operation.
 
 ### Example:
@@ -25,7 +25,8 @@ unitfactor(quantity) = Unitful.ustrip(Unitful.upreferred(1.0*quantity))
 """
     @ufac_str
 
-Obtain the unit factor of a quantity  -- its numerical value when converted to unitful preferred units.
+String macro for calculating the unit factor of a quantity.
+See also [`unitfactor`](@ref).
 
 ### Example:
 ```jldoctest
@@ -136,7 +137,7 @@ println(x|>u"μA")
 15000.0 μA
 ```
 """
-(unit::Unitful.FreeUnits)(x::Real) = unitful(x,unit)
+(unit::FreeUnits)(x::Real) = unitful(x,unit)
 
 
 
@@ -160,8 +161,7 @@ as constants.  The information is obtained from [PhysicalConstants.CODATA2018](h
 
 ### Example:
 ```jldoctest
-@phconstants N_A
-# output
+julia> @phconstants N_A
 6.02214076e23
 ```
 
