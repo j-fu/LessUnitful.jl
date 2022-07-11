@@ -7,8 +7,7 @@ import PhysicalConstants
 """
     unitfactor(quantity)
 
-Calculate the unit factor from a given quantity.
-This is the numerical value of the quantity after converting it to unitful preferred units,
+Calculate the unit factor of a quantity,
 see [Notations](@ref). See [`unitful`](@ref) for the reciprocal operation.
 
 ### Example:
@@ -25,8 +24,7 @@ unitfactor(quantity) = Unitful.ustrip(Unitful.upreferred(1.0*quantity))
 """
     @ufac_str
 
-String macro for calculating the unit factor of a quantity.
-See also [`unitfactor`](@ref).
+String macro for calculating the unit factor of a quantity, see also [`unitfactor`](@ref).
 
 ### Example:
 ```jldoctest
@@ -53,7 +51,7 @@ end
 """
     @unitfactors
 
-Declare unit factors as global constants.
+Declare unit factors of units as global constants.
 
 ### Example
 
@@ -81,9 +79,11 @@ end
 """
     unitful(x,unit)
 
-Make number `x` "unitful". Assume `x` represents an unit factor
-with respect to a unitful preferred unit. Create a unitful quantity in that unit
-and convert it to `unit`.  See [`unitfactor`](@ref) for the reciprocal operation.
+Make number `x` "unitful". Assume `x` represents an unit factor 
+of a quantity with respect to the corresponding products of powers of unitful preferred units.
+Create this quantity and convert it to  `unit`.  
+
+See [`unitfactor`](@ref) for the reciprocal operation.
 
 ### Example
 
@@ -156,7 +156,7 @@ end
 """
     @phconstants
 
-Declare numerical values of physical constants as unit factors with respect to unitful preferred units
+Declare numerical values of physical constants as unit factors with respect to  unitful preferred units
 as constants.  The information is obtained from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
 
 ### Example:
@@ -182,10 +182,7 @@ macro phconstants(xs...)
 end
 
 
-
-export unitfactor,@ufac_str, @unitfactors, unitful
-
-
+export unitfactor, @ufac_str, @unitfactors, unitful
 export @phconstants
 export @u_str
 

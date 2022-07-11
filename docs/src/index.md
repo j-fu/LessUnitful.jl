@@ -7,7 +7,35 @@ $(read("../../README.md",String))
 
 ## Notations
 
-The package accesses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) to allow to define floating point constants like `cm`, `kPa`, `mV` etc. called *unit factors* which are factors relative to products of powers of  [unitful preferred units](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred) in the sense of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl). By default these *unitful preferred units* are synonymous with the [*SI base units*](https://www.nist.gov/pml/owm/metric-si/si-units). However, by calling [Unitful.preferunits](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.preferunits) these reference values can be changed.
+The package accesses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) to allow to define floating point constants for *units* like `cm`, `kPa`, `mV` etc. called *unit factors*. These *unit factors* relate these units to their corresponding products of powers of  [*unitful preferred units*](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred) in the sense of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl). 
+
+Example: Unit: `kN` ``\to`` representation in powers of SI base units: ``1000\cdot kg\cdot m\cdot s^{-2}`` 
+``\to`` unit factor: 1000.0
+
+```jldoctest
+julia> using LessUnitful
+
+julia> @unitfactors kN
+1000.0
+```
+
+
+
+The unit factor  of a *quantity* like  `1cm`, `10kPa`, `1mV` is its numerical value  after conversion to products of powers of unitful preferred units.
+
+
+Example: Quantity: `3kN` ``\to`` representation in powers of SI base units: ``3000\cdot kg\cdot m\cdot s^{-2}`` 
+``\to`` unit factor: 3000.0
+
+```jldoctest
+julia> using LessUnitful
+
+julia> ufac"3kN"
+3000.0
+```
+
+
+By default the unitful preferred units are synonymous with the [*SI base units*](https://www.nist.gov/pml/owm/metric-si/si-units). By calling [Unitful.preferunits](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.preferunits) these reference values can be changed.
 
 
 ## Index
