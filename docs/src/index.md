@@ -7,7 +7,7 @@ $(read("../../README.md",String))
 
 ## Notations
 
-The package accesses [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) to allow to define floating point constants for *units* like `cm`, `kPa`, `mV` etc. called *unit factors*. These *unit factors* relate these units to their corresponding products of powers of  [*unitful preferred units*](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred) in the sense of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl). 
+The package provides tools to access [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) to define floating point constants for *units* like `cm`, `kPa`, `mV` etc. called *unit factors*. These *unit factors* relate units to their corresponding products of powers of  [*unitful preferred units*](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred) in the sense of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl). 
 
 By default the unitful preferred units are synonymous with the [*SI base units*](https://www.nist.gov/pml/owm/metric-si/si-units). By calling [Unitful.preferunits](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.preferunits) these reference values can be changed.
 
@@ -26,7 +26,7 @@ julia> @unitfactors kN
 
 
 
-The unit factor  of a *quantity* like  `1cm`, `10kPa`, `1mV` is its numerical value  after conversion to products of powers of unitful preferred units.
+The unit factor  of a *quantity* like  `5cm`, `10kPa`, `3mV` is its numerical value  after conversion to products of powers of unitful preferred units.
 
 
 Example: Quantity: `3kN` ``\to`` representation in powers of SI base units: ``3000\cdot kg\cdot m\cdot s^{-2}`` 
@@ -39,7 +39,15 @@ julia> ufac"3kN"
 3000.0
 ```
 
-
+Providing these unit factors allows a "unitless" workflow with physical data which is characterized by the
+following aspects:
+- All calculations are done in numerical values corresponding to unitful preferred units (SI base units by default)
+- Data input can be performed in at least two different ways:
+   - Declare `@unitfactors cm` and enter e.g. `length=10*cm`
+   - Enter "unitful" `length=10u"cm"` and actually provide `unitfactor(length)` to the "unitless" code 
+- Data output can go as follows - assume result `p` is a pressure:
+   - Declare `@unitfactors kPa` and do `println("p= ",p/kPa,"kPa")`
+   - Alternatively, do `println(p|> u"kPa")`
 
 ## Index
 ```@index
