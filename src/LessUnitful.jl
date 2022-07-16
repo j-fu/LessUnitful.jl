@@ -3,6 +3,30 @@ import Unitful
 import Unitful: @u_str, FreeUnits
 import PhysicalConstants
 
+##################################################################################
+"""
+    Unitfactors
+
+The module LessUnitful.Unitfactors contains all unitfactors  of Unitful units.
+
+### Example:
+
+```jldoctest
+julia> using LessUnitful.Unitfactors: cm,mm
+
+julia> cm+mm
+0.011
+```
+"""
+module Unitfactors
+using Unitful
+allunits=filter(n->isdefined(Unitful,n)&&isa(getproperty(Unitful,n),Unitful.FreeUnits),names(Unitful,all=true))
+for  u in allunits
+    run = quote const $u=Unitful.float(Unitful.ustrip(Unitful.upreferred(1*Unitful.$u)))end
+    eval(run)
+end
+end
+
 
 """
     unitfactor(quantity)
@@ -52,6 +76,12 @@ end
     @unitfactors
 
 Declare unit factors of units as global constants.
+!!! compat
+     This macro will likely be removed in one of the next 0.x releases in favor of 
+
+     ```
+        using LessUnitful.Unitfactors: ...
+     ```
 
 ### Example
 
@@ -71,10 +101,16 @@ and we can declare multiple unit factors at once:
 ```
 @unitfactors mm cm km A V
 ```
+
 """
 macro unitfactors(xs...)
     esc(_unitfactors(xs...))
 end
+
+
+export unitfactor, @ufac_str, @unitfactors
+
+##################################################################################
 
 """
     unitful(x,unit)
@@ -94,10 +130,10 @@ julia> unitful(200,u"kPa")
 
 Equivalent to 
 ```
-unit((Float64(x)*Unitful.upreferred(unit)))
+unit(Unitful.float(x*Unitful.upreferred(unit)))
 ```
 """
-unitful(x,unit)=unit((Float64(x)*Unitful.upreferred(unit)))
+unitful(x,unit)=unit(Unitful.float(x*Unitful.upreferred(unit)))
 
 
 """
@@ -122,7 +158,7 @@ julia> 200 |> u"kPa"
 This may be convenient when printing with units:
 Instead of 
 ```jldoctest
-@unitfactors μA  mA
+using LessUnitful.Unitfactors: μA,mA
 x = 15mA
 println(x/μA," μA")
 # output
@@ -130,7 +166,7 @@ println(x/μA," μA")
 ```
 one can use 
 ```jldoctest
-@unitfactors μA  mA
+using LessUnitful.Unitfactors: μA,mA
 x = 15mA
 println(x|>u"μA")  
 # output
@@ -141,6 +177,54 @@ println(x|>u"μA")
 
 
 
+export unitful, @u_str
+
+##################################################################################
+"""
+   CODATA2018
+
+The module LessUnitful.CODATA2018 contains all unitfactors for physical constants from PhysicalConstants.CODATA2018
+
+### Example:
+
+```jldoctest
+julia> using LessUnitful.CODATA2018: N_A
+
+julia> N_A
+6.02214076e23
+```
+"""
+module CODATA2018
+import PhysicalConstants,Unitful
+allconsts=filter(n->isa(getproperty(PhysicalConstants.CODATA2018,n),Unitful.AbstractQuantity),names(PhysicalConstants.CODATA2018,all=true))
+for  c in allconsts
+    run = quote const $c=Unitful.float(Unitful.ustrip(Unitful.upreferred(PhysicalConstants.CODATA2018.$c)))end
+    eval(run)
+end
+end
+
+"""
+   CODATA2014
+
+The module LessUnitful.CODATA2014 contains all unitfactors for physical constants from PhysicalConstants.CODATA2014
+
+### Example:
+
+```jldoctest
+julia> using LessUnitful.CODATA2014: N_A
+
+julia> N_A
+6.022140857e23
+```
+"""
+module CODATA2014
+import PhysicalConstants,Unitful
+allconsts=filter(n->isa(getproperty(PhysicalConstants.CODATA2014,n),Unitful.AbstractQuantity),names(PhysicalConstants.CODATA2014,all=true))
+for  c in allconsts
+    run = quote const $c=Unitful.float(Unitful.ustrip(Unitful.upreferred(PhysicalConstants.CODATA2014.$c)))end
+    eval(run)
+end
+end
 
 
 function _phconstants(xs...)
@@ -148,7 +232,7 @@ function _phconstants(xs...)
     PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = Float64($(Unitful).ustrip($(Unitful).upreferred($(PhysicalConstants).CODATA2018.$x)))))
+        push!(code.args, :(const $x = Unitful.float($(Unitful).ustrip($(Unitful).upreferred($(PhysicalConstants).CODATA2018.$x)))))
     end
     code
 end
@@ -158,6 +242,14 @@ end
 
 Declare numerical values of physical constants as unit factors with respect to  unitful preferred units
 as constants.  The information is obtained from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
+
+!!! compat
+     This macro will likely be removed in one of the next 0.x releases in favor of 
+
+     ```
+        using LessUnitful.CODATA2018: ...
+     ```
+
 
 ### Example:
 ```jldoctest
@@ -181,10 +273,7 @@ macro phconstants(xs...)
     esc(_phconstants(xs...))
 end
 
-
-export unitfactor, @ufac_str, @unitfactors, unitful
 export @phconstants
-export @u_str
 
 end # module LessUnitful
 
