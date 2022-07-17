@@ -18,9 +18,9 @@ Example: Unit: `kN` ``\to`` representation in powers of SI base units: ``1000\cd
 ``\to`` unit factor: 1000.0
 
 ```jldoctest
-julia> using LessUnitful.Unitfactors: kN
+julia> using LessUnitful
 
-julia> kN
+julia> @unitfactors kN
 1000.0
 ```
 
@@ -39,26 +39,45 @@ julia> ufac"3kN"
 3000.0
 ```
 
+The unitfactor represents the numerical value of a unit/quatity expressed in preferred units:
+
+```jldoctest
+julia> using LessUnitful, Unitful
+
+julia> unitfactor(u"cm")==Unitful.ustrip(Unitful.upreferred(u"1.0cm"))
+true
+```
+
+Reciprocally, one can make a number "unitful", assuming it corresponds to one of the preferred units.
+Assume `x` represents an unit factor 
+of a quantity with respect to the corresponding products of powers of unitful preferred units.
+Create this quantity and convert it to  `unit`: 
+
+```jldoctest
+julia> using LessUnitful, Unitful
+
+julia> unitful(0.03,u"cm")==u"cm"(Unitful.float(0.03*Unitful.upreferred(u"cm")))
+true
+```
+
+
+
+
 Providing these unit factors allows a "unitless" workflow with physical data which is characterized by the
 following aspects:
 - All calculations are done in numerical values corresponding to unitful preferred units (SI base units by default)
 - Data input can be performed in at least two different ways:
-   - Obtain unit factors via e.g. `using LessUnitful.Unitfactors: cm` and enter e.g. `length=10*cm`
-   - Alternativlely, declare `@unitfactors cm` and enter e.g. `length=10*cm`
+   - Declare `@unitfactors cm` and enter e.g. `length=10*cm`
    - Enter "unitful" `length=10u"cm"` and actually provide `unitfactor(length)` to the "unitless" code 
 - Data output can go as follows - assume result `p` is a pressure:
-   - Obtain unit factors via `using LessUnitful.Unitfactors: kPa` and do `println("p= ",p/kPa,"kPa")`
-   - Alternativlely, declare `@unitfactors kPa` and do `println("p= ",p/kPa,"kPa")`
+   - Declare `@unitfactors kPa` and do `println("p= ",p/kPa,"kPa")`
    - Alternatively, do `println(p|> u"kPa")`
-
-
 
 
 
 
 ## Obtaining unit factors
 ```@docs
-LessUnitful.Unitfactors
 unitfactor
 @ufac_str
 @unitfactors
@@ -84,8 +103,6 @@ unitful(x,unit)
 
 ## Physical constants
 ```@docs
-LessUnitful.CODATA2018
-LessUnitful.CODATA2014
 @phconstants
 ``` 
 
