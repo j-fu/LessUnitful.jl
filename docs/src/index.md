@@ -67,7 +67,7 @@ unitfactor
 
 
 ## Creating unitful values
-LessUnitful re-exports [`@u_str`](https://painterqubits.github.io/Unitful.jl/stable/manipulations/#Unitful.@u_str) from  [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
+For convenience, lessUnitful re-exports [`@u_str`](https://painterqubits.github.io/Unitful.jl/stable/manipulations/#Unitful.@u_str) from  [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
 
 ```jldoctest ustr
 julia> using LessUnitful
@@ -78,7 +78,7 @@ julia> u"1.0mV"
 
 ```@docs
 unitful
-LessUnitful.FreeUnits
+unitful(x,unit)
 ```
 
 

@@ -1,7 +1,7 @@
 using Documenter, LessUnitful
 
 function mkdocs()
-    DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using LessUnitful); recursive=true)
+    DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using LessUnitful,Unitful); recursive=true)
     makedocs(sitename="LessUnitful.jl",
              modules = [LessUnitful],
              clean = false, 

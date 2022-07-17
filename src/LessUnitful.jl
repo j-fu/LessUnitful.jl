@@ -7,7 +7,7 @@ import PhysicalConstants
 """
     Unitfactors
 
-The module LessUnitful.Unitfactors contains all unitfactors  of Unitful units.
+The module LessUnitful.Unitfactors contains all unitfactors  of  [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) units.
 
 ### Example:
 
@@ -17,6 +17,15 @@ julia> using LessUnitful.Unitfactors: cm,mm
 julia> cm+mm
 0.011
 ```
+
+Compare this with the corresponding calculations with Unitful values:
+
+```jldoctest
+julia> u"1cm"+u"1mm"|> float
+0.011 m
+```
+
+
 """
 module Unitfactors
 using Unitful
@@ -31,8 +40,8 @@ end
 """
     unitfactor(quantity)
 
-Calculate the unit factor of a quantity,
-see [Notations](@ref). See [`unitful`](@ref) for the reciprocal operation.
+Calculate the unit factor of a quantity.
+
 
 ### Example:
 ```jldoctest
@@ -41,6 +50,26 @@ julia> unitfactor(u"1mV")
 julia> u"1mV"|> unitfactor
 0.001
 ```
+
+Compare this with the corresponding calculations with Unitful values:
+```jldoctest
+julia> u"1mV" |> u"V" |> float
+0.001 V
+```
+
+The unitfactor represents the numerical value of a unit/quatity expressed in preferred units:
+
+```jldoctest
+julia> unitfactor(u"cm")==Unitful.ustrip(Unitful.upreferred(u"1.0cm"))
+true
+```
+
+See [`unitful`](@ref) for the reciprocal operation:
+```jldoctest
+julia> u"1cm" |> unitfactor |> u"cm"
+1.0 cm
+```
+
 """
 unitfactor(quantity) = Unitful.ustrip(Unitful.upreferred(1.0*quantity))
 
@@ -92,12 +121,7 @@ julia> 3cm
 0.03
 ```
 
-`@unitfactors cm` is equivalent to
-```
-const cm = ustrip(upreferred(u"1.0cm"))
-```
-
-and we can declare multiple unit factors at once:
+We can declare multiple unit factors at once:
 ```
 @unitfactors mm cm km A V
 ```
@@ -115,11 +139,9 @@ export unitfactor, @ufac_str, @unitfactors
 """
     unitful(x,unit)
 
-Make number `x` "unitful". Assume `x` represents an unit factor 
-of a quantity with respect to the corresponding products of powers of unitful preferred units.
-Create this quantity and convert it to  `unit`.  
+Make number `x` "unitful". 
 
-See [`unitfactor`](@ref) for the reciprocal operation.
+
 
 ### Example
 
@@ -128,10 +150,17 @@ julia> unitful(200,u"kPa")
 0.2 kPa
 ```
 
-Equivalent to 
+Assume `x` represents an unit factor 
+of a quantity with respect to the corresponding products of powers of unitful preferred units.
+Create this quantity and convert it to  `unit`: 
+
+```jldoctest
+julia> unitful(0.03,u"cm")==u"cm"(Unitful.float(0.03*Unitful.upreferred(u"cm")))
+true
 ```
-unit(Unitful.float(x*Unitful.upreferred(unit)))
-```
+
+
+
 """
 unitful(x,unit)=unit(Unitful.float(x*Unitful.upreferred(unit)))
 
@@ -172,7 +201,18 @@ println(x|>u"μA")
 # output
 15000.0 μA
 ```
+
+
+See [`unitfactor`](@ref) for the reciprocal operation:
+```
+julia>  0.05|> u"cm" |> unitfactor
+0.05
+```
+
+
 """
+function unitful end
+
 (unit::FreeUnits)(x::Real) = unitful(x,unit)
 
 
