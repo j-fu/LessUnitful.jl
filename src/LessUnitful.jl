@@ -6,22 +6,29 @@ import PhysicalConstants
 ##################################################################################
 
 """
-    unitfactor(quantity)
+    unitfactor(x)
 
-Calculate the unit factor of a quantity.
+Calculate the unit factor of a quantity or unit `x`.
 
 
 ### Example:
 ```jldoctest
-julia> unitfactor(u"1mV")
+julia> unitfactor(u"3mV")
+0.003
+julia> u"3mV"|> unitfactor
+0.003
+```
+
+```jldoctest
+julia> unitfactor(u"mV")
 0.001
-julia> u"1mV"|> unitfactor
+julia> u"mV"|> unitfactor
 0.001
 ```
 
 Compare this with the corresponding calculations with Unitful values:
 ```jldoctest
-julia> u"1mV" |> u"V" |> float
+julia> u"1mV" |> u"V" |> Unitful.float
 0.001 V
 ```
 
@@ -33,8 +40,9 @@ julia> u"1cm" |> unitfactor |> u"cm"
 ```
 
 """
-unitfactor(quantity) = Unitful.ustrip(Unitful.upreferred(1.0*quantity))
-
+unitfactor(u) = unitfactor(Unitful,u)
+unitfactor(U::Module,u::Unitful.FreeUnits) = unitfactor(U,1u)
+unitfactor(U::Module,quantity) = U.float(U.ustrip(U.upreferred(quantity)))
 
 """
     @ufac_str
@@ -50,7 +58,7 @@ julia> ufac"1mV"
 macro  ufac_str(x)
     Unitful=getproperty(@__MODULE__,:Unitful)
     quote
-        $(Unitful).ustrip($(Unitful).upreferred(1.0*$(Unitful).@u_str($(x))))
+        unitfactor($(Unitful),$(Unitful).@u_str($(x)))
     end
 end
 
@@ -58,7 +66,16 @@ function _unitfactors(xs...)
     Unitful=getproperty(@__MODULE__,:Unitful)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = $(Unitful).ustrip($(Unitful).upreferred(1.0*$(Unitful).$x))))
+        push!(code.args, :(const $x = unitfactor($(Unitful),$(Unitful).$x)))
+    end
+    code
+end
+
+function _local_unitfactors(xs...)
+    Unitful=getproperty(@__MODULE__,:Unitful)
+    code = Expr(:block)
+    for x in xs
+        push!(code.args, :(local $x = unitfactor($(Unitful),$(Unitful).$x)))
     end
     code
 end
@@ -67,9 +84,6 @@ end
     @unitfactors
 
 Declare unit factors of units as global constants.
-
-
-
 
 
 ### Example
@@ -100,16 +114,39 @@ Compare this with the corresponding calculations with Unitful values:
 julia> u"1cm"+u"1mm"|> float
 0.011 m
 ```
-
-
-
 """
 macro unitfactors(xs...)
     esc(_unitfactors(xs...))
 end
 
 
-export unitfactor, @ufac_str, @unitfactors
+
+
+"""
+    @local_unitfactors
+
+Declare unit factors of units as local variables.
+
+
+### Example
+
+```jldoctest
+function f()
+    @local_unitfactors cm
+    3cm
+end
+f()
+# output
+0.03
+```
+
+"""
+macro local_unitfactors(xs...)
+    esc(_local_unitfactors(xs...))
+end
+
+
+export unitfactor, @ufac_str, @unitfactors, @local_unitfactors
 
 ##################################################################################
 
@@ -193,7 +230,17 @@ function _phconstants(xs...)
     PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = $(Unitful).float($(Unitful).ustrip($(Unitful).upreferred($(PhysicalConstants).CODATA2018.$x)))))
+        push!(code.args, :(const $x = unitfactor($(Unitful),$(PhysicalConstants).CODATA2018.$x)))
+    end
+    code
+end
+
+function _local_phconstants(xs...)
+    Unitful=getproperty(@__MODULE__,:Unitful)
+    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
+    code = Expr(:block)
+    for x in xs
+        push!(code.args, :(local $x = unitfactor($(Unitful),$(PhysicalConstants).CODATA2018.$x)))
     end
     code
 end
@@ -227,7 +274,29 @@ macro phconstants(xs...)
     esc(_phconstants(xs...))
 end
 
-export @phconstants
+
+"""
+    @local_phconstants
+
+Like [`@phconstants`](@ref) but declares a local variable.
+
+### Example:
+```jldoctest
+function f()
+    @local_phconstants N_A
+    N_A
+end
+f()
+# output
+6.02214076e23
+```
+"""
+macro local_phconstants(xs...)
+    esc(_local_phconstants(xs...))
+end
+
+
+export @phconstants, @local_phconstants
 
 end # module LessUnitful
 

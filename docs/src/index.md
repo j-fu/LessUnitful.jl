@@ -9,8 +9,7 @@ $(read("../../README.md",String))
 
 The package provides tools to access [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) to define floating point constants for *units* like `cm`, `kPa`, `mV` etc. called *unit factors*. These *unit factors* relate units to their corresponding products of powers of  [*unitful preferred units*](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred) in the sense of [Unitful.jl](https://github.com/PainterQubits/Unitful.jl). 
 
-By default the unitful preferred units are synonymous with the [*SI base units*](https://www.nist.gov/pml/owm/metric-si/si-units). By calling [Unitful.preferunits](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.preferunits) these reference values can be changed.
-
+By default the unitful preferred units are synonymous with the [*SI base units*](https://www.nist.gov/pml/owm/metric-si/si-units). 
 
 
 
@@ -81,6 +80,7 @@ following aspects:
 unitfactor
 @ufac_str
 @unitfactors
+@local_unitfactors
 ```
 
 
@@ -104,11 +104,25 @@ unitful(x,unit)
 ## Physical constants
 ```@docs
 @phconstants
+@local_phconstants
 ``` 
 
 
 
+## Changing preferred units
 
+By calling [Unitful.preferunits](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.preferunits) 
+the preferred units can be changed from SI base units to e.g. `g` for mass and `cm` for length.
+
+In order to be effective, this needs to be called before any invocation of  [Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred), and as a consequence, before 
+any invocation of macros or functions from the LessUnitful package.
+
+Moreover, while it is convenient to use e.g. [`@unitfactors`](@ref) in the global scope of a package, it is important to
+understand that values in global scope are evaluated  *during precompilation* and cannot be influenced by
+[Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred).
+Therefore it appears that packages which are designed to work consistently with other defaults than SI base units should 
+avoid the use of [`@unitfactors`](@ref) and [`@phconstants`](@ref). The use of [`@local_unitfactors`](@ref) and [`@local_phconstants`](@ref),
+and of [`@ufac_str`](@ref), [`unitfactor`](@ref), [`unitful`](@ref) is ok, though.
 
 
 
