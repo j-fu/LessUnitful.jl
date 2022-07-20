@@ -44,6 +44,14 @@ unitfactor(u) = unitfactor(Unitful,u)
 unitfactor(U::Module,u::Unitful.FreeUnits) = unitfactor(U,1u)
 unitfactor(U::Module,quantity) = U.float(U.ustrip(U.upreferred(quantity)))
 
+function _ufac_str(x)
+    Unitful=getproperty(@__MODULE__,:Unitful)
+    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
+    code = Expr(:block)
+    push!(code.args, :(unitfactor($(Unitful),eval($(Unitful).lookup_units(($(PhysicalConstants).CODATA2018,$(Unitful)), Meta.parse($x))))))
+    code
+end
+
 """
     @ufac_str
 
@@ -54,13 +62,34 @@ String macro for calculating the unit factor of a quantity, see also [`unitfacto
 julia> ufac"1mV"
 0.001
 ```
+
+This macro allows as wellto obtatin unit factors from physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
+
+```jldoctest
+julia> ufac"N_A"
+6.02214076e23
+```
+
+```jldoctest
+julia> ufac"N_A*e"
+96485.33212331001
+```
+
 """
 macro  ufac_str(x)
+    esc(_ufac_str(x))
+end
+
+
+
+macro xufac_str(x)
     Unitful=getproperty(@__MODULE__,:Unitful)
     quote
         unitfactor($(Unitful),$(Unitful).@u_str($(x)))
     end
 end
+
+
 
 function _unitfactors(xs...)
     Unitful=getproperty(@__MODULE__,:Unitful)
@@ -294,7 +323,6 @@ f()
 macro local_phconstants(xs...)
     esc(_local_phconstants(xs...))
 end
-
 
 export @phconstants, @local_phconstants
 
