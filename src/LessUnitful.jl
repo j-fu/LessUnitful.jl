@@ -40,25 +40,13 @@ julia> u"1cm" |> unitfactor |> u"cm"
 ```
 
 """
-unitfactor(u) = unitfactor(Unitful,u)
-unitfactor(U::Module,u::Unitful.FreeUnits) = unitfactor(U,1u)
-unitfactor(U::Module,quantity) = U.float(U.ustrip(U.upreferred(quantity)))
+unitfactor(u::Unitful.FreeUnits)=Unitful.float(Unitful.ustrip(Unitful.upreferred(1u)))
+unitfactor(q::Unitful.AbstractQuantity) = Unitful.float(Unitful.ustrip(Unitful.upreferred(q)))
+unitfactor(r::Real)=r
 
-function _ufac_str(x)
-    Unitful=getproperty(@__MODULE__,:Unitful)
-    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
-    code = Expr(:block)
-    push!(code.args, :(unitfactor($(Unitful),eval($(Unitful).lookup_units(($(PhysicalConstants).CODATA2018,$(Unitful)), Meta.parse($x))))))
-    code
-end
 
-function _ph_str(x)
-    Unitful=getproperty(@__MODULE__,:Unitful)
-    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
-    code = Expr(:block)
-    push!(code.args, :(unitfactor($(Unitful),eval($(Unitful).lookup_units(($(PhysicalConstants).CODATA2018,), Meta.parse($x))))))
-    code
-end
+#_ph_str(expr)=unitfactor(Unitful,eval(Unitful.lookup_units((PhysicalConstants.CODATA2018,),expr)))
+
 
 """
     @ufac_str
@@ -71,52 +59,34 @@ julia> ufac"1mV"
 0.001
 ```
 
-This macro allows as well to obtain unit factors from physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
 
-```jldoctest
-julia> ufac"N_A"
-6.02214076e23
-```
+This also allows to access  the physical constants q, c0, μ0, ε0, Z0, G, gn, h, ħ, Φ0, me, mn, mp, μB, Na, k, R, σ, R∞ defined in `Unitful.jl`.
 
-```jldoctest
-julia> ufac"N_A*e"
-96485.33212331001
-```
-Due to [this issue](https://github.com/PainterQubits/Unitful.jl/issues/545) it seems that that the use of these values are preferable
-to the use of the physical constants `q, c0, μ0, ε0, Z0, G, gn, h, ħ, Φ0, me, mn, mp, μB, Na, k, R, σ, R∞`
-defined in `Unitful.jl`.
-
-See also [`@ph_str`](@ref) 
+See  [`@ph_str`](@ref)  for an alternative way to access physical constants.
 """
 macro ufac_str(x)
-    esc(_ufac_str(x))
-end
-
-
-
-macro xufac_str(x)
-    Unitful=getproperty(@__MODULE__,:Unitful)
     quote
-        unitfactor($(Unitful),$(Unitful).@u_str($(x)))
+        unitfactor($(Unitful).@u_str($(x)))
     end
 end
 
+# macro xufac_str(x)
+#     esc(Expr(:call, :unitfactor, Unitful.lookup_units((PhysicalConstants.CODATA2018,Unitful),Meta.parse(x))))
+# end
 
 
 function _unitfactors(xs...)
-    Unitful=getproperty(@__MODULE__,:Unitful)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = unitfactor($(Unitful),$(Unitful).$x)))
+        push!(code.args, :(const $x = unitfactor($Unitful.$x)))
     end
     code
 end
 
 function _local_unitfactors(xs...)
-    Unitful=getproperty(@__MODULE__,:Unitful)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = unitfactor($(Unitful),$(Unitful).$x)))
+        push!(code.args, :(local $x = unitfactor($Unitful.$x)))
     end
     code
 end
@@ -227,8 +197,13 @@ julia> 200 |> u"kPa"
 0.2 kPa
 ```
 
+Without LessUnitful, the result of this operation would be:
+```
+ERROR: DimensionError: kPa and 200 are not dimensionally compatible.
+```
 
 This may be convenient when printing with units:
+
 Instead of 
 ```jldoctest
 @unitfactors μA mA;
@@ -267,21 +242,17 @@ export unitful, @u_str
 
 
 function _phconstants(xs...)
-    Unitful=getproperty(@__MODULE__,:Unitful)
-    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = unitfactor($(Unitful),$(PhysicalConstants).CODATA2018.$x)))
+        push!(code.args, :(const $x = unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
 
 function _local_phconstants(xs...)
-    Unitful=getproperty(@__MODULE__,:Unitful)
-    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = unitfactor($(Unitful),$(PhysicalConstants).CODATA2018.$x)))
+        push!(code.args, :(local $x = unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
@@ -291,6 +262,8 @@ end
 
 Declare numerical values of physical constants as unit factors with respect to  unitful preferred units
 as constants.  The information is obtained from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
+
+
 
 
 ### Example:
@@ -321,6 +294,7 @@ end
 
 Like [`@phconstants`](@ref) but declares a local variable.
 
+
 ### Example:
 ```jldoctest
 function f()
@@ -342,13 +316,23 @@ end
 
 String macro for calculating the unit factor of a physical constant from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
 
+
+
+
 ```jldoctest
 julia> ph"N_A"
 6.02214076e23
 ```
+
+```jldoctest
+julia> ph"N_A*e"
+96485.33212331001
+```
+
+
 """
 macro ph_str(x)
-    esc(_ph_str(x))
+    esc(Expr(:call, :unitfactor,Unitful.lookup_units((PhysicalConstants.CODATA2018),Meta.parse(x))))
 end
 
 

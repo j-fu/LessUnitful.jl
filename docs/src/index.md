@@ -121,6 +121,10 @@ the preferred units can be changed from SI base units to e.g. `g` for mass and `
 In order to be effective, this needs to be called before any invocation of  [Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred), and as a consequence, before 
 any invocation of macros or functions from the LessUnitful package.
 
+Due to [this issue](https://github.com/PainterQubits/Unitful.jl/issues/545) for Julia 1.8 it is advised to evaluate at least one of the
+unit factors from LessUnitful immediately after calling `preferunits`.
+
+
 Moreover, while it is convenient to use e.g. [`@unitfactors`](@ref) in the global scope of a package, it is important to
 understand that values in global scope are evaluated  *during precompilation* and cannot be influenced by
 [Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred).
