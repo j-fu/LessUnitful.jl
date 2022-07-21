@@ -52,25 +52,26 @@ function unitfactor_u()
     x=float(ustrip(1upreferred(Unitful.cm)))
 end
 
-    lessunitful_ustr()
-    unitful_ustr()
-    unitful_u()
-    lessunitful_unitfactor_q()
-    lessunitful_ustr1()
-    unitfactor_u()
-    lessunitful_unitfactor_u()
-    lessunitful_local()
-    
-    n=@allocated lessunitful_local(); @test n==0
-
-    n=@allocated lessunitful_ustr(); @test n==0
-    n=@allocated unitful_ustr(); @test n==0
-    n=@allocated unitful_u(); @test n==0
-    n=@allocated lessunitful_unitfactor_q(); @test n==0
-    n=@allocated lessunitful_ustr1(); @test n==0
-    n=@allocated unitfactor_u(); @test n==0
-    n=@allocated lessunitful_unitfactor_u(); @test n==0
-
+    function dotest()
+        lessunitful_ustr()
+        unitful_ustr()
+        unitful_u()
+        lessunitful_unitfactor_q()
+        lessunitful_ustr1()
+        unitfactor_u()
+        lessunitful_unitfactor_u()
+        lessunitful_local()
+        
+        n=@allocated lessunitful_ustr(); @test n==0
+        n=@allocated unitful_ustr(); @test n==0
+        n=@allocated unitful_u(); @test n==0
+        n=@allocated lessunitful_unitfactor_q(); @test n==0
+        n=@allocated lessunitful_ustr1(); @test n==0
+        n=@allocated unitfactor_u(); @test n==0
+        n=@allocated lessunitful_unitfactor_u(); @test n==0
+        n=@allocated lessunitful_local(); @test n==0
+    end
+    dotest()
 
 end
 
