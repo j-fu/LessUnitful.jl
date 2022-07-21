@@ -102,7 +102,11 @@ unitful(x,unit)
 
 
 ## Physical constants
+
+As already described above, the [`@ufac_str`](@ref)  macro can be used to extract the values of 
+physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1).
 ```@docs
+@ph_str
 @phconstants
 @local_phconstants
 ``` 
@@ -122,7 +126,7 @@ understand that values in global scope are evaluated  *during precompilation* an
 [Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred).
 Therefore it appears that packages which are designed to work consistently with other defaults than SI base units should 
 avoid the use of [`@unitfactors`](@ref) and [`@phconstants`](@ref). The use of [`@local_unitfactors`](@ref) and [`@local_phconstants`](@ref),
-and of [`@ufac_str`](@ref), [`unitfactor`](@ref), [`unitful`](@ref) is ok, though.
+and of [`@ufac_str`](@ref), [`unitfactor`](@ref), [`unitful`](@ref) does not suffer from this problem, though.
 
 
 

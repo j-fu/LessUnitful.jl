@@ -52,10 +52,18 @@ function _ufac_str(x)
     code
 end
 
+function _ph_str(x)
+    Unitful=getproperty(@__MODULE__,:Unitful)
+    PhysicalConstants=getproperty(@__MODULE__,:PhysicalConstants)
+    code = Expr(:block)
+    push!(code.args, :(unitfactor($(Unitful),eval($(Unitful).lookup_units(($(PhysicalConstants).CODATA2018,), Meta.parse($x))))))
+    code
+end
+
 """
     @ufac_str
 
-String macro for calculating the unit factor of a quantity, see also [`unitfactor`](@ref).
+String macro for calculating the unit factor of a quantity or physical constant, see also [`unitfactor`](@ref).
 
 ### Example:
 ```jldoctest
@@ -63,7 +71,7 @@ julia> ufac"1mV"
 0.001
 ```
 
-This macro allows as wellto obtatin unit factors from physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
+This macro allows as well to obtain unit factors from physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
 
 ```jldoctest
 julia> ufac"N_A"
@@ -74,9 +82,13 @@ julia> ufac"N_A"
 julia> ufac"N_A*e"
 96485.33212331001
 ```
+Due to [this issue](https://github.com/PainterQubits/Unitful.jl/issues/545) it seems that that the use of these values are preferable
+to the use of the physical constants `q, c0, μ0, ε0, Z0, G, gn, h, ħ, Φ0, me, mn, mp, μB, Na, k, R, σ, R∞`
+defined in `Unitful.jl`.
 
+See also [`@ph_str`](@ref) 
 """
-macro  ufac_str(x)
+macro ufac_str(x)
     esc(_ufac_str(x))
 end
 
@@ -324,7 +336,23 @@ macro local_phconstants(xs...)
     esc(_local_phconstants(xs...))
 end
 
-export @phconstants, @local_phconstants
+
+"""
+    @ph_str
+
+String macro for calculating the unit factor of a physical constant from [PhysicalConstants.CODATA2018](https://juliaphysics.github.io/PhysicalConstants.jl/stable/constants/#CODATA2018-1)
+
+```jldoctest
+julia> ph"N_A"
+6.02214076e23
+```
+"""
+macro ph_str(x)
+    esc(_ph_str(x))
+end
+
+
+export @phconstants, @local_phconstants, @ph_str
 
 end # module LessUnitful
 
