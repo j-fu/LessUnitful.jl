@@ -9,49 +9,43 @@ using Test, Documenter, Unitful, LessUnitful
 end
 
 @testset "allocs" begin
-function unitful_ustr()
-    x=float(ustrip(upreferred(1u"cm")))
-end
-
-function unitful_u()
-    x=float(ustrip(upreferred(1Unitful.cm)))
-end
-
-function lessunitful_ustr()
-    x=ufac"cm"
-end
-
-function lessunitful_ustr1()
-    x=ufac"1cm"
-end
-
-
-function lessunitful_phstr()
-    x=LessUnitful.ph"1N_A"
-end
-
-function lessunitful_local()
-    @local_unitfactors cm
-    x=cm
-end
-
-
-function lessunitful_unitfactor_q()
-    x=1Unitful.cm|>unitfactor
-end
-
-
-
-
-function lessunitful_unitfactor_u()
-    x=unitfactor(Unitful.cm)
-end
-
-
-function unitfactor_u()
-    x=float(ustrip(1upreferred(Unitful.cm)))
-end
-
+    function unitful_ustr()
+        x=float(ustrip(upreferred(1u"cm")))
+    end
+    
+    function unitful_u()
+        x=float(ustrip(upreferred(1Unitful.cm)))
+    end
+    
+    function lessunitful_ustr()
+        x=ufac"cm"
+    end
+    
+    function lessunitful_ustr1()
+        x=ufac"1cm"
+    end
+    
+    function lessunitful_phstr()
+        x=LessUnitful.ph"1N_A"
+    end
+    
+    function lessunitful_local()
+        @local_unitfactors cm
+        x=cm
+    end
+    
+    function lessunitful_unitfactor_q()
+        x=1Unitful.cm|>unitfactor
+    end
+    
+    function lessunitful_unitfactor_u()
+        x=unitfactor(Unitful.cm)
+    end
+    
+    function unitfactor_u()
+        x=float(ustrip(1upreferred(Unitful.cm)))
+    end
+    
     function dotest()
         lessunitful_ustr()
         unitful_ustr()
@@ -75,7 +69,10 @@ end
 
 end
 
+@testset "upreferred" begin
+    @test run(`$(joinpath(Sys.BINDIR,"julia")) --project=. runtest1.jl`).exitcode==0
+end
 
 DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using Unitful, LessUnitful); recursive=true)
-doctest(LessUnitful)
+#doctest(LessUnitful)
 
