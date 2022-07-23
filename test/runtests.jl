@@ -74,5 +74,5 @@ end
 end
 
 DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using Unitful, LessUnitful); recursive=true)
-#doctest(LessUnitful)
+doctest(LessUnitful)
 
