@@ -113,7 +113,7 @@ physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.git
 
 ## Ensuring consistency with SI Base units
 
-```@doc
+```@docs
 ensureSIBase
 ```
 
