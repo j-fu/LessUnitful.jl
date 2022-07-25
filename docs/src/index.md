@@ -111,6 +111,11 @@ physical constants from  [PhysicalConstants.CODATA2018](https://juliaphysics.git
 @local_phconstants
 ``` 
 
+## Ensuring consistency with SI Base units
+
+```@doc
+ensureSIBase
+```
 
 
 ## Changing preferred units
@@ -124,13 +129,10 @@ any invocation of macros or functions from the LessUnitful package.
 Due to [this issue](https://github.com/PainterQubits/Unitful.jl/issues/545) for Julia 1.8 it is advised to evaluate at least one of the
 unit factors from LessUnitful immediately after calling `preferunits`.
 
-
 Moreover, while it is convenient to use e.g. [`@unitfactors`](@ref) in the global scope of a package, it is important to
 understand that values in global scope are evaluated  *during precompilation* and cannot be influenced by
 [Unitful.upreferred](https://painterqubits.github.io/Unitful.jl/stable/conversion/#Unitful.upreferred).
 Therefore it appears that packages which are designed to work consistently with other defaults than SI base units should 
 avoid the use of [`@unitfactors`](@ref) and [`@phconstants`](@ref). The use of [`@local_unitfactors`](@ref) and [`@local_phconstants`](@ref),
 and of [`@ufac_str`](@ref), [`unitfactor`](@ref), [`unitful`](@ref) does not suffer from this problem, though.
-
-
 

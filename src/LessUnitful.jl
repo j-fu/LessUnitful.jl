@@ -338,5 +338,25 @@ end
 
 export @phconstants, @local_phconstants, @ph_str
 
+
+"""
+    ensureSIBase()
+Ensure that the preferred units are the SI base units. 
+Calls to `Unitful.preferunits` after this will have no effect. 
+
+```jldoctest
+julia> ensureSIBase()
+true
+```
+"""
+function ensureSIBase()
+    @local_unitfactors m kg s A K cd mol
+    if !all([m,kg,s,A,K,cd,mol].==1.0)
+        throw(ErrorException("Failed to ensure SI Base units due to previous call to Unitful.preferunits"))
+    end
+    true
+end
+export ensureSIBase
+
 end # module LessUnitful
 
