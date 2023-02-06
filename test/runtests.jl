@@ -69,8 +69,10 @@ end
 
 end
 
+
+@show pwd()
 @testset "upreferred" begin
-    @test run(`$(joinpath(Sys.BINDIR,"julia")) --project=. runtest1.jl`).exitcode==0
+    @test run(`$(joinpath(Sys.BINDIR,"julia")) --project=$(joinpath(pwd(),"..")) runtest1.jl`).exitcode==0
 end
 
 DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using Unitful, LessUnitful); recursive=true)
