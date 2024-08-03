@@ -69,6 +69,10 @@ end
 
 end
 
+@testset "testmodule" begin
+    include("testmodule.jl")
+    testmodule.runtests()
+end
 
 @show pwd()
 @testset "upreferred" begin
