@@ -4,6 +4,67 @@ Markdown.parse("""
 $(read("../../README.md",String))
 """)
 ```
+## Why this package ?
+We demonstrate this with an example.
+Assume we have a nice function which calculates with unitful values:
+```jldoctest demo
+julia> using Unitful
+
+julia> unitful_lsum(a::Unitful.Length, b::Unitful.Length) = a+b;
+
+julia> unitful_lsum(10.0u"cm",1.0u"m")
+1.1 m
+```
+
+Now we assume that there is a faster way to calculate the same sum with the caveat that the
+implementation does not support unitful values, e.g. because it uses a binary package written in C.
+(here, we just use a mock example, in reality, think about sparse linear algebra)
+```jldoctest demo
+julia> fast_lsum(a::Real, b::Real)=a+b;
+
+```
+
+If we want to use this method in a faster implementation of `unitful_area`, we might try to use `Unitful.ustrip`
+to strip the units and to attach them back somehow afterwards. However, before stripping the arguments need to be brought to
+a common unit. Canonically, this is the preferred unit of the corresponding dimension provided by Unitful (SI base unit by default).
+```jldoctest demo
+julia> function fast_unitful_lsum(a::Unitful.Length, b::Unitful.Length)
+           a_stripped=a |> upreferred |> ustrip
+           b_stripped=b |> upreferred |> ustrip
+           fast_lsum(a_stripped, b_stripped)* unit(upreferred(a))
+       end;
+
+julia> fast_unitful_lsum(10.0u"cm",1.0u"m")
+1.1 m
+```
+
+LessUnitful.jl provides
+```jldoctest demo
+julia> using LessUnitful
+
+julia> function fast_lessunitful_lsum(a::Unitful.Length, b::Unitful.Length)
+           a_stripped=a |> unitfactor
+           b_stripped=b |> unitfactor
+           fast_lsum(a_stripped, b_stripped) |> u"m"
+       end;
+
+julia> fast_lessunitful_lsum(10.0u"cm",1.0u"m")
+1.1 m
+```
+
+Also it helps to support a complete "less unitful" workflow:
+```jldoctest demo
+julia> fast_lsum(10.0ufac"cm",1.0ufac"m")
+1.1
+```
+
+It is also possible to attach arbitrary units back in a way consistent to
+the preferred units:
+```jldoctest demo
+julia> fast_lsum(10.0ufac"cm",1.0ufac"m") |> u"cm"
+110.00000000000001 cm
+```
+
 
 ## Notations
 
