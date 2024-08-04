@@ -8,7 +8,7 @@ LessUnitful
 
 Small package which provides convenience tools to access quantities based on [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) and [PhysicalConstants.jl](https://github.com/JuliaPhysics/PhysicalConstants.jl) in an "unitless" way -- as floating point numbers representing the numerical value of a quantity expressed in preferred units (SI base units by default). This appears to be useful in projects using code which cannot easily made unit-aware, e.g. due to the use of sparse linear algebra. 
 
-## Breaking changes in v1.0
+## Breaking changes in v1.1
 - `Unitful.@u_str` is not anymore re-exported. Instead,  `using Unitful` should be used.
 - The functor method  `(::Unitful.FreeUnits)(x::Real)` is now exported by the submodule `LessUnitful.MoreUnitful`.
   So if  something like `x=1|>u"cm"` is required (which should give 100cm because `1` is assumed to be a value
