@@ -265,19 +265,16 @@ julia> ph"N_A"
 6.02214076e23
 ```
 
-```jldoctest
-julia> ph"N_A*e"
-96485.33212331001
-```
-
 
 """
 macro ph_str(x)
     quote
-        LessUnitful.unitfactor(eval(Unitful.lookup_units($(PhysicalConstants.CODATA2018),Meta.parse($x))))
+        LessUnitful.unitfactor(getglobal(LessUnitful.PhysicalConstants.CODATA2018,Symbol($x)))
+#        LessUnitful.unitfactor(eval(Unitful.lookup_units($(PhysicalConstants.CODATA2018),Meta.parse($x))))
     end
 end
 
+#_ph_str(x)=unitfactor(getglobal(PhysicalConstants.CODATA2018,Symbol(x)))
 
 export @phconstants, @local_phconstants, @ph_str
 
