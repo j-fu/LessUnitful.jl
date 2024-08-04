@@ -69,6 +69,10 @@ end
 
 end
 
+@testset "testmodule" begin
+    include("testmodule.jl")
+    testmodule.runtests()
+end
 
 @testset "upreferred" begin
     @test run(`$(joinpath(Sys.BINDIR,"julia")) --project=$(joinpath(pwd(),"..")) runtest1.jl`).exitcode==0

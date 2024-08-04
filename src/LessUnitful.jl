@@ -5,8 +5,8 @@ module LessUnitful
 import Unitful
 import PhysicalConstants
 
-##################################################################################
 
+##################################################################################
 """
     unitfactor(x)
 
@@ -47,9 +47,7 @@ unitfactor(q::Unitful.AbstractQuantity) = Unitful.float(Unitful.ustrip(Unitful.u
 unitfactor(r::Real)=r
 
 
-#_ph_str(expr)=unitfactor(Unitful,eval(Unitful.lookup_units((PhysicalConstants.CODATA2018,),expr)))
-
-
+##################################################################################
 """
     @ufac_str
 
@@ -68,19 +66,14 @@ See  [`@ph_str`](@ref)  for an alternative way to access physical constants.
 """
 macro ufac_str(x)
     quote
-        unitfactor($(Unitful).@u_str($(x)))
+        LessUnitful.unitfactor($(Unitful).@u_str($(x)))
     end
 end
-
-# macro xufac_str(x)
-#     esc(Expr(:call, :unitfactor, Unitful.lookup_units((PhysicalConstants.CODATA2018,Unitful),Meta.parse(x))))
-# end
-
 
 function _unitfactors(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = unitfactor($Unitful.$x)))
+        push!(code.args, :(const $x = LessUnitful.unitfactor($Unitful.$x)))
     end
     code
 end
@@ -88,11 +81,12 @@ end
 function _local_unitfactors(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = unitfactor($Unitful.$x)))
+        push!(code.args, :(local $x = LessUnitful.unitfactor($Unitful.$x)))
     end
     code
 end
 
+##################################################################################
 """
     @unitfactors
 
@@ -133,8 +127,7 @@ macro unitfactors(xs...)
 end
 
 
-
-
+##################################################################################
 """
     @local_unitfactors
 
@@ -161,8 +154,8 @@ end
 
 export unitfactor, @ufac_str, @unitfactors, @local_unitfactors
 
-##################################################################################
 
+##################################################################################
 """
     unitful(x,unit)
 
@@ -183,14 +176,14 @@ julia> unitful(200,u"kPa")
 """
 unitful(x,unit)=unit(Unitful.float(x*Unitful.upreferred(unit)))
 
+
 export unitful
+
 ##################################################################################
-
-
 function _phconstants(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = unitfactor($PhysicalConstants.CODATA2018.$x)))
+        push!(code.args, :(const $x = LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
@@ -198,7 +191,7 @@ end
 function _local_phconstants(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = unitfactor($PhysicalConstants.CODATA2018.$x)))
+        push!(code.args, :(local $x = LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
@@ -235,6 +228,7 @@ macro phconstants(xs...)
 end
 
 
+##################################################################################
 """
     @local_phconstants
 
@@ -257,6 +251,7 @@ macro local_phconstants(xs...)
 end
 
 
+##################################################################################
 """
     @ph_str
 
@@ -278,13 +273,16 @@ julia> ph"N_A*e"
 
 """
 macro ph_str(x)
-    esc(Expr(:call, :unitfactor,Unitful.lookup_units((PhysicalConstants.CODATA2018),Meta.parse(x))))
+    quote
+        LessUnitful.unitfactor(eval(Unitful.lookup_units($(PhysicalConstants.CODATA2018),Meta.parse($x))))
+    end
 end
 
 
 export @phconstants, @local_phconstants, @ph_str
 
 
+##################################################################################
 """
     ensureSIBase()
 
