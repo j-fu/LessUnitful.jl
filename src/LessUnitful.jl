@@ -1,6 +1,8 @@
+"""
+$(read(joinpath(@__DIR__,"..","README.md"),String))
+"""
 module LessUnitful
 import Unitful
-import Unitful: @u_str, FreeUnits
 import PhysicalConstants
 
 ##################################################################################
@@ -164,8 +166,11 @@ export unitfactor, @ufac_str, @unitfactors, @local_unitfactors
 """
     unitful(x,unit)
 
-Make number `x` "unitful". 
-
+Make number `x` "unitful", assuming that
+the value of `x` is the expression of the quantity
+as in preferred units.  
+This  helps to convert numbers to unitful quantities
+in a way compatible with [`unitfactor`](@ref).
 
 
 ### Example
@@ -178,66 +183,7 @@ julia> unitful(200,u"kPa")
 """
 unitful(x,unit)=unit(Unitful.float(x*Unitful.upreferred(unit)))
 
-
-"""
-    (unit)(x::Real)
-
-Make number `x` "unitful" by calling [`unitful`](@ref).
-
-### Example
-
-```jldoctest
-julia> u"kPa"(200)
-0.2 kPa
-```
-
-
-```jldoctest
-julia> 200 |> u"kPa"
-0.2 kPa
-```
-
-Without LessUnitful, the result of this operation would be:
-```
-ERROR: DimensionError: kPa and 200 are not dimensionally compatible.
-```
-
-This may be convenient when printing with units:
-
-Instead of 
-```jldoctest
-@unitfactors μA mA;
-x = 15mA
-println(x/μA," μA")
-# output
-15000.0 μA
-```
-one can use 
-```jldoctest
-@unitfactors  μA mA
-x = 15mA
-println(x|>u"μA")  
-# output
-15000.0 μA
-```
-
-
-See [`unitfactor`](@ref) for the reciprocal operation:
-```
-julia>  0.05|> u"cm" |> unitfactor
-0.05
-```
-
-
-"""
-function unitful end
-
-(unit::FreeUnits)(x::Real) = unitful(x,unit)
-
-
-
-export unitful, @u_str
-
+export unitful
 ##################################################################################
 
 
@@ -359,5 +305,7 @@ function ensureSIBase()
 end
 export ensureSIBase
 
+
+include("MoreUnitful.jl")
 end # module LessUnitful
 

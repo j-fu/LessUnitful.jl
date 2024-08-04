@@ -1,4 +1,4 @@
-using Test, Documenter, Unitful, LessUnitful
+using Test, Documenter, Unitful, LessUnitful, Aqua, ExplicitImports
 
 @phconstants AvogadroConstant
 @unitfactors km  mol  dm nm
@@ -70,7 +70,6 @@ end
 end
 
 
-@show pwd()
 @testset "upreferred" begin
     @test run(`$(joinpath(Sys.BINDIR,"julia")) --project=$(joinpath(pwd(),"..")) runtest1.jl`).exitcode==0
 end
@@ -78,3 +77,25 @@ end
 DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using Unitful, LessUnitful); recursive=true)
 doctest(LessUnitful)
 
+
+@testset "ExplicitImports" begin
+    @test ExplicitImports.check_no_implicit_imports(LessUnitful) === nothing
+    @test ExplicitImports.check_no_stale_explicit_imports(LessUnitful; ignore=(:unitfactor,)) === nothing
+end
+
+@testset "Aqua" begin
+    Aqua.test_ambiguities(LessUnitful)
+    Aqua.test_unbound_args(LessUnitful)
+    Aqua.test_undefined_exports(LessUnitful)
+    Aqua.test_project_extras(LessUnitful)
+    Aqua.test_stale_deps(LessUnitful)
+    Aqua.test_deps_compat(LessUnitful)
+    Aqua.test_piracies(LessUnitful)
+    Aqua.test_persistent_tasks(LessUnitful)
+end
+    
+if isdefined(Docs,:undocumented_names) # >=1.11
+    @testset "UndocumentedNames" begin
+        @test isempty(Docs.undocumented_names(LessUnitful))
+    end
+end

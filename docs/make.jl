@@ -1,9 +1,9 @@
 using Documenter, LessUnitful
 
 function mkdocs()
-    DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using LessUnitful, Unitful); recursive=true)
+    DocMeta.setdocmeta!(LessUnitful, :DocTestSetup, :(using LessUnitful, Unitful,  LessUnitful.MoreUnitful); recursive=true)
     makedocs(sitename="LessUnitful.jl",
-             modules = [LessUnitful],
+             modules = [LessUnitful, LessUnitful.MoreUnitful],
              clean = false, 
              doctest = true,
              authors = "J. Fuhrmann",

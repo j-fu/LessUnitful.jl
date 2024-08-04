@@ -1,9 +1,7 @@
-```@eval
-using Markdown
-Markdown.parse("""
-$(read("../../README.md",String))
-""")
+```@docs
+LessUnitful
 ```
+
 ## Why this package ?
 We demonstrate this with an example.
 Assume we have a nice function which calculates with unitful values:
@@ -40,7 +38,7 @@ julia> fast_unitful_lsum(10.0u"cm",1.0u"m")
 
 LessUnitful.jl provides
 ```jldoctest demo
-julia> using LessUnitful
+julia> using LessUnitful, LessUnitful.MoreUnitful
 
 julia> function fast_lessunitful_lsum(a::Unitful.Length, b::Unitful.Length)
            a_stripped=a |> unitfactor
@@ -131,14 +129,14 @@ following aspects:
    - Enter "unitful" `length=10u"cm"` and actually provide `unitfactor(length)` to the "unitless" code 
 - Data output can go as follows - assume result `p` is a pressure:
    - Declare `@unitfactors kPa` and do `println("p= ",p/kPa,"kPa")`
-   - Alternatively, do `println(p|> u"kPa")`
+   - Alternatively, do `println(unitful(p,u"kPa"))`, or (with [`LessUnitful.MoreUnitful`](@ref)): `println(p|> u"kPa")`
 
 
 
 
 ## Obtaining unit factors
 ```@docs
-unitfactor
+LessUnitful.unitfactor
 @ufac_str
 @unitfactors
 @local_unitfactors
@@ -147,18 +145,15 @@ unitfactor
 
 
 ## Creating unitful values
-For convenience, lessUnitful re-exports [`@u_str`](https://painterqubits.github.io/Unitful.jl/stable/manipulations/#Unitful.@u_str) from  [Unitful.jl](https://github.com/PainterQubits/Unitful.jl).
-
-```jldoctest ustr
-julia> using LessUnitful
-
-julia> u"1.0mV"
-1.0 mV
-```
 
 ```@docs
-unitful
 unitful(x,unit)
+```
+
+
+```@docs
+LessUnitful.MoreUnitful
+LessUnitful.MoreUnitful.CallableUnit
 ```
 
 
