@@ -45,7 +45,13 @@ julia> u"1cm" |> unitfactor |> u"cm"
 unitfactor(u::Unitful.FreeUnits)=Unitful.float(Unitful.ustrip(Unitful.upreferred(1u)))
 unitfactor(q::Unitful.AbstractQuantity) = Unitful.float(Unitful.ustrip(Unitful.upreferred(q)))
 unitfactor(r::Real)=r
+function unitfactor(t::Unitful.RelativeScaleTemperature)
+    error("Relative temperature scales are not supported by LessUnitful")
+end
 
+function unitfactor(u::Unitful.FreeUnits{N,D,A}) where {N,D,A<:Unitful.Affine}
+    error("Affine units are not supported by LessUnitful")
+end
 
 ##################################################################################
 """
