@@ -87,6 +87,47 @@ doctest(LessUnitful)
     @test ExplicitImports.check_no_stale_explicit_imports(LessUnitful; ignore=(:unitfactor,)) === nothing
 end
 
+
+@testset "NoAffine" begin
+    function testcelsius1()
+        try
+            x=ufac"°C"
+        catch err
+            return true
+        end
+        return false
+    end
+    function testcelsius2()
+        try
+            x=ufac"2°C"
+        catch err
+            return true
+        end
+        return false
+    end
+    function testfahrenheit1()
+        try
+            x=ufac"°F"
+        catch err
+            return true
+        end
+        return false
+    end
+    function testfahrenheit2()
+        try
+            x=ufac"2°F"
+        catch err
+            return true
+        end
+        return false
+    end
+    @test testcelsius1()
+    @test testcelsius2()
+    @test testfahrenheit1()
+    @test testfahrenheit2()
+end
+
+
 @testset "Aqua" begin
     Aqua.test_ambiguities(LessUnitful)
     Aqua.test_unbound_args(LessUnitful)
