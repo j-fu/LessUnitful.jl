@@ -36,7 +36,8 @@ julia> fast_unitful_lsum(10.0u"cm",1.0u"m")
 1.1 m
 ```
 
-LessUnitful.jl provides
+LessUnitful.jl provides in the submodule `MoreUnitful` (not exported by default due to type piracy,
+and thus not for use  in packages)
 ```jldoctest demo
 julia> using LessUnitful, LessUnitful.MoreUnitful
 
@@ -131,7 +132,7 @@ following aspects:
    - Declare `@unitfactors kPa` and do `println("p= ",p/kPa,"kPa")`
    - Alternatively, do `println(unitful(p,u"kPa"))`, or (with [`LessUnitful.MoreUnitful`](@ref)): `println(p|> u"kPa")`
 
-
+The downside of this approach is tha affine quantities like °C and °F cannot be supported.
 
 
 ## Obtaining unit factors
