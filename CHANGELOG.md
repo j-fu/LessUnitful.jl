@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.2.1] - unreleased
+- fix broken explicit imports of macros like `@unitfactors`
+
 ## [1.2.0] - 2025-02-08
 - Disable affine units and relative temperature scales as not maintainable with the approach in this package
 
