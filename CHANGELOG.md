@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.1] - unreleased
+## [1.2.1] - 2025-07-25
 - fix broken explicit imports of macros like `@unitfactors`
 
 ## [1.2.0] - 2025-02-08
