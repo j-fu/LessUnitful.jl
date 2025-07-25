@@ -72,14 +72,14 @@ See  [`@ph_str`](@ref)  for an alternative way to access physical constants.
 """
 macro ufac_str(x)
     quote
-        LessUnitful.unitfactor($(Unitful).@u_str($(x)))
+        $LessUnitful.unitfactor($(Unitful).@u_str($(x)))
     end
 end
 
 function _unitfactors(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = LessUnitful.unitfactor($Unitful.$x)))
+        push!(code.args, :(const $x = $LessUnitful.unitfactor($Unitful.$x)))
     end
     code
 end
@@ -87,7 +87,7 @@ end
 function _local_unitfactors(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = LessUnitful.unitfactor($Unitful.$x)))
+        push!(code.args, :(local $x = $LessUnitful.unitfactor($Unitful.$x)))
     end
     code
 end
@@ -189,7 +189,7 @@ export unitful
 function _phconstants(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(const $x = LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
+        push!(code.args, :(const $x = $LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
@@ -197,7 +197,7 @@ end
 function _local_phconstants(xs...)
     code = Expr(:block)
     for x in xs
-        push!(code.args, :(local $x = LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
+        push!(code.args, :(local $x = $LessUnitful.unitfactor($PhysicalConstants.CODATA2018.$x)))
     end
     code
 end
@@ -275,7 +275,7 @@ julia> ph"N_A"
 """
 macro ph_str(x)
     quote
-        LessUnitful.unitfactor(getglobal(LessUnitful.PhysicalConstants.CODATA2018,Symbol($x)))
+        $LessUnitful.unitfactor(getglobal($LessUnitful.PhysicalConstants.CODATA2018,Symbol($x)))
 #        LessUnitful.unitfactor(eval(Unitful.lookup_units($(PhysicalConstants.CODATA2018),Meta.parse($x))))
     end
 end
